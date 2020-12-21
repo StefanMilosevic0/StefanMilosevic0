@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <link rel="icon" href="logo.png">
     <title>Stefan Milosevic</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-   
-  </head>
-  <body>
+
+</head>
+
+<body>
     <style>
-        body{
+        body {
             background-color: black;
             color: white;
         }
@@ -18,39 +20,49 @@
         $(document).ready(function () {
 
             function write() {
-                var showUrl = location.href.replace(/\//g, '\\')
-                showUrl[showUrl.length-1] = '>'
+                let showUrl = location.href.replace(/\//g, '\\')
+                showUrl = showUrl.split('')
+
+                if (showUrl[showUrl.length - 1] == '\\') {
+                    showUrl[showUrl.length - 1] = '>'
+                }
+                else{
+                    showUrl[showUrl.length] = '>'
+                }
+                showUrl = showUrl.join('')
+
                 print(showUrl, null, true)
             }
-            
-        
 
-        function NotRecognized(string) {
-           return "<br>'" + string + "'" + " is not recognized as an internal or external command,<br>operable program or batch file."
-        }
 
-        function print(string, elementSelector, br) {
-            let div = document.body;
 
-            if(typeof elementSelector === 'string'){
-                div = $(elementSelector)
+            function NotRecognized(string) {
+                return "<br>'" + string + "'" + " is not recognized as an internal or external command,<br>operable program or batch file."
             }
-            if(br){
-                br = '<br>'
+
+            function print(string, elementSelector, br) {
+                let div = document.body;
+
+                if (typeof elementSelector === 'string') {
+                    div = $(elementSelector)
+                }
+                if (br) {
+                    br = '<br>'
+                }
+                else {
+                    br = ''
+                }
+                str =
+                    $(div).append("<code>" + br + string + "</code>")
+
             }
-            else{
-                br = ''
-            }
-            str = 
-            $(div).append("<code>" + br + string + "</code>")
-            
-        }
-        print("Hi, I'm Stefan", null, false)
-        write()
-    })
-        
+            print("Hi, I'm Stefan", null, false)
+            write()
+        })
+
     </script>
 
-    
-  </body>
+
+</body>
+
 </html>
