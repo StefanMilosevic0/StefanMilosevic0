@@ -12,8 +12,9 @@
             this.desc = desc
         }
         var helpComands = [
-            new HelpCommand('SEE PROJECTS', 'Type "SEE PROJECTS" to see all my projects'),
-            new HelpCommand('VISIT GIT', 'Type "VISIT GIT" to visit my Git-Hub page'),
+            new HelpCommand('SEE PROJECTS', 'Type "SEE PROJECTS" to see all my projects.'),
+            new HelpCommand('VISIT GIT', 'Type "VISIT GIT" to visit my Git-Hub page.'),
+            new HelpCommand('COLOR', ' Sets the default console foreground and background colors.'),
         ]
     </script>
 </head>
@@ -51,7 +52,11 @@
                 }
                 showUrl = showUrl.join('')
 
+                $('.underscore').remove()
+
                 print(showUrl, null, true, 'write')
+                print('', null, false, 'user-text')
+                print('<code>_</code>', null, false, 'underscore')
 
                 blinkUnderscore()
             }
@@ -59,7 +64,7 @@
 
 
             function NotRecognized(string) {
-                return "<br>'" + string + "'" + " is not recognized as an internal or external command,<br>operable program or batch file."
+                return "'" + string + "'" + " is not recognized as an internal or external command,<br>operable program or batch file."
             }
 
             function print(string, elementSelector, br, classes = '') {
@@ -82,33 +87,60 @@
             print('Type "help" to see options', null, true)
             write()
 
-
+            var ctrlDown = false
             function keyDown(e) {
                 $(document.body).keydown(function (e) {
-                    let writes = $('.write');
-                    let lastWrite = $(writes[writes.length - 1]);
-                    switch(e.key){
-                        case 'Enter':{
-                            executeComand(lastWrite.html().split('&gt;')[1])
-                            return;
-                        }
-                        case 'Backspace':{
-                            let str = lastWrite.html().split('&gt;')[1]
-                            console.log(str)
-                            str = str.substring(0, str.length-1)
-                            lastWrite.html(lastWrite.html().split('&gt;')[0] + str)
-                            return;
-                        }
-                        case 'Enter':{
+                    let userTexts = $('.user-text');
+                    let lastUserText = $(userTexts[userTexts.length - 1]);
+
+
+                    switch (e.key) {
+                        case 'Enter': {
+                            executeComand(lastUserText.html().toLocaleLowerCase())
                             break;
                         }
-                        case 'Enter':{
+                        case 'Backspace': {
+                            let str = lastUserText.html()
+                            str = str.substring(0, str.length - 1)
+                            lastUserText.html(str)
                             break;
+                        }
+                        case 'Control': {
+                            /*
+                            ovo napravi da moze ctrl+c i ctrl+v
+                            */
+                            ctrlDown = true
+                            break;
+                        }
+                        case 'c' || 'C': {
+                            
+                            if (ctrlDown) {
+                                console.log('ctrl+c')
+                                ctrlDown = false
+                                let copyText = lastUserText.select()
+                                document.execCommand('copy')
+                                console.log(copyText)
+
+                            }
+                            break;
+                        }
+                        case 'v' || 'V': {
+                            if (ctrlDown) {
+
+                            }
+                            break;
+                        }
+                        default: {
+                            if (e.key.length > 1) {
+                                return
+                            }
+                            else {
+                                lastUserText.html(lastUserText.html() + e.key)
+                            }
                         }
                     }
-                    
 
-                    lastWrite.html(lastWrite.html() + e.key)
+
 
 
                 })
@@ -116,9 +148,10 @@
             }
 
             function executeComand(string) {
-                string = string.toLowerCase()
+                console.log('command executed')
+                let stringLower = string.toLowerCase()
 
-                if (string == 'help' || string == 'help_') {
+                if (stringLower == 'help') {
 
                     //print("For more information on a specific command, type HELP command-name", null, true)
                     for (let command of helpComands) {
@@ -127,17 +160,33 @@
                     write()
 
                 }
+                else if (/^color/.test(stringLower)) {
+                    console.log('das')
+                }
+                else if (stringLower == 'exit') {
+                    console.log('dsa')
+                    var customWindow = window.open('', '_blank', '');
+                    //customWindow.close();
+                }
+                else {
+                    print(NotRecognized(string), null, true)
+                    write()
+                }
             }
 
             function blinkUnderscore() {
 
                 let writes = $('.write');
-                console.log(writes)
                 if (writes.length > 0) {
                     console.log(writes.length)
                     let lastWrite = $(writes[writes.length - 1]);
                     setInterval(() => {
-                        let lastChar = lastWrite.html().split('')[lastWrite.html().length - 1]
+                        /*let lastChar = lastWrite.html().split('')[lastWrite.html().length - 1]
+
+                        if(lastChar == '&gt;'){
+                            return
+                        }
+                        
                         if (lastChar != '_') {
                             lastWrite.html(lastWrite.html() + '_')
                         }
@@ -146,6 +195,14 @@
                             str = str.replace('_', '')
                             lastWrite.html(str)
                         }
+                        */
+                        if ($('.underscore').last().css('display') === 'none') {
+                            $('.underscore').last().css('display', 'inline')
+                        }
+                        else {
+                            $('.underscore').css('display', 'none')
+                        }
+
                     }, 500)
                 }
             }
