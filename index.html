@@ -6,7 +6,16 @@
     <link rel="icon" href="logo.png">
     <title>Stefan Milosevic</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+    <script>
+        function HelpCommand(name, desc) {
+            this.name = name
+            this.desc = desc
+        }
+        var helpComands = [
+            new HelpCommand('SEE PROJECTS', 'Type "SEE PROJECTS" to see all my projects'),
+            new HelpCommand('VISIT GIT', 'Type "VISIT GIT" to visit my Git-Hub page'),
+        ]
+    </script>
 </head>
 
 <body>
@@ -14,6 +23,17 @@
         body {
             background-color: black;
             color: white;
+        }
+
+        ::-moz-selection {
+            /* Code for Firefox */
+            color: black;
+            background: rgba(255, 255, 255, 0.996);
+        }
+
+        ::selection {
+            color: black;
+            background: rgba(255, 255, 255, 0.998);
         }
     </style>
     <script>
@@ -26,12 +46,14 @@
                 if (showUrl[showUrl.length - 1] == '\\') {
                     showUrl[showUrl.length - 1] = '>'
                 }
-                else{
+                else {
                     showUrl[showUrl.length] = '>'
                 }
                 showUrl = showUrl.join('')
 
-                print(showUrl, null, true)
+                print(showUrl, null, true, 'write')
+
+                blinkUnderscore()
             }
 
 
@@ -40,7 +62,7 @@
                 return "<br>'" + string + "'" + " is not recognized as an internal or external command,<br>operable program or batch file."
             }
 
-            function print(string, elementSelector, br) {
+            function print(string, elementSelector, br, classes = '') {
                 let div = document.body;
 
                 if (typeof elementSelector === 'string') {
@@ -53,12 +75,84 @@
                     br = ''
                 }
                 str =
-                    $(div).append("<code>" + br + string + "</code>")
+                    $(div).append("<code class=" + classes + ">" + br + string + "</code>")
 
             }
             print("Hi, I'm Stefan", null, false)
+            print('Type "help" to see options', null, true)
             write()
+
+
+            function keyDown(e) {
+                $(document.body).keydown(function (e) {
+                    let writes = $('.write');
+                    let lastWrite = $(writes[writes.length - 1]);
+                    switch(e.key){
+                        case 'Enter':{
+                            executeComand(lastWrite.html().split('&gt;')[1])
+                            return;
+                        }
+                        case 'Backspace':{
+                            let str = lastWrite.html().split('&gt;')[1]
+                            console.log(str)
+                            str = str.substring(0, str.length-1)
+                            lastWrite.html(lastWrite.html().split('&gt;')[0] + str)
+                            return;
+                        }
+                        case 'Enter':{
+                            break;
+                        }
+                        case 'Enter':{
+                            break;
+                        }
+                    }
+                    
+
+                    lastWrite.html(lastWrite.html() + e.key)
+
+
+                })
+
+            }
+
+            function executeComand(string) {
+                string = string.toLowerCase()
+
+                if (string == 'help' || string == 'help_') {
+
+                    //print("For more information on a specific command, type HELP command-name", null, true)
+                    for (let command of helpComands) {
+                        print(command.name + '--->' + command.desc, null, true)
+                    }
+                    write()
+
+                }
+            }
+
+            function blinkUnderscore() {
+
+                let writes = $('.write');
+                console.log(writes)
+                if (writes.length > 0) {
+                    console.log(writes.length)
+                    let lastWrite = $(writes[writes.length - 1]);
+                    setInterval(() => {
+                        let lastChar = lastWrite.html().split('')[lastWrite.html().length - 1]
+                        if (lastChar != '_') {
+                            lastWrite.html(lastWrite.html() + '_')
+                        }
+                        else {
+                            let str = lastWrite.html();
+                            str = str.replace('_', '')
+                            lastWrite.html(str)
+                        }
+                    }, 500)
+                }
+            }
+
+            keyDown()
         })
+
 
     </script>
 
