@@ -18,7 +18,9 @@
         $(document).ready(function () {
 
             function write() {
-                var showUrl = location.href.replace(/\//g, '\\') + '>'
+                var showUrl = location.href.replace(/\//g, '\\')
+                showUrl[showUrl.length-1] = ''
+                showUrl +=  '>'
                 print(showUrl, null, true)
             }
             
