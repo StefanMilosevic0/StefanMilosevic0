@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" href="logo.png">
+    <title>Stefan Milosevic</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   
+  </head>
+  <body>
+    <style>
+        body{
+            background-color: black;
+            color: white;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+
+            function write() {
+                var showUrl = location.href.replace(/\//g, '\\') + '>'
+                print(showUrl, null, true)
+            }
+            
+        
+
+        function NotRecognized(string) {
+           return "<br>'" + string + "'" + " is not recognized as an internal or external command,<br>operable program or batch file."
+        }
+
+        function print(string, elementSelector, br) {
+            let div = document.body;
+
+            if(typeof elementSelector === 'string'){
+                div = $(elementSelector)
+            }
+            if(br){
+                br = '<br>'
+            }
+            else{
+                br = ''
+            }
+            str = 
+            $(div).append("<code>" + br + string + "</code>")
+            
+        }
+        print("Hi, I'm Stefan", null, false)
+        write()
+    })
+        
+    </script>
+
+    
+  </body>
+</html>
