@@ -15,6 +15,7 @@
             new HelpCommand('SEE PROJECTS', 'Type "SEE PROJECTS" to see all my projects.'),
             new HelpCommand('VISIT GIT', 'Type "VISIT GIT" to visit my Git-Hub page.'),
             new HelpCommand('COLOR', ' Sets the default console foreground and background colors.'),
+            new HelpCommand('CLEAR', ' Clears the console.')
         ]
     </script>
 </head>
@@ -58,10 +59,8 @@
                 print('', null, false, 'user-text')
                 print('<code>_</code>', null, false, 'underscore')
 
-                blinkUnderscore()
+                blinkUnderscore(500)
             }
-
-
 
             function NotRecognized(string) {
                 return "'" + string + "'" + " is not recognized as an internal or external command,<br>operable program or batch file."
@@ -83,9 +82,6 @@
                     $(div).append("<code class=" + classes + ">" + br + string + "</code>")
 
             }
-            print("Hi, I'm Stefan", null, false)
-            print('Type "help" to see options', null, true)
-            write()
 
             var ctrlDown = false
             function keyDown(e) {
@@ -113,14 +109,31 @@
                             break;
                         }
                         case 'c' || 'C': {
-                            
-                            if (ctrlDown) {
-                                console.log('ctrl+c')
-                                ctrlDown = false
-                                let copyText = lastUserText.select()
-                                document.execCommand('copy')
-                                console.log(copyText)
 
+                            if (ctrlDown) {
+                                ctrlDown = false
+                                console.log('ctrl+c')
+                                /*                  OVO NIJE OK,POPRAVI DA MOZE C I V 
+                                                                let copyText = userTexts[userTexts.length - 1]
+                                                                copyText.select()
+                                                                document.execCommand('copy')
+                                                                console.log(copyText.value)
+                                */
+
+
+                                var copyText = document.getElementsByClassName("user-text")//[document.getElementsByClassName("user-text").length-1];
+                                copyText.select();
+                                copyText.setSelectionRange(0, 99999)
+                                document.execCommand("copy");
+                                alert("Copied the text: " + copyText.value);
+
+
+
+
+
+                            }
+                            else {
+                                lastUserText.html(lastUserText.html() + e.key)
                             }
                             break;
                         }
@@ -128,6 +141,10 @@
                             if (ctrlDown) {
 
                             }
+                            else {
+                                lastUserText.html(lastUserText.html() + e.key)
+                            }
+
                             break;
                         }
                         default: {
@@ -150,6 +167,9 @@
             function executeComand(string) {
                 console.log('command executed')
                 let stringLower = string.toLowerCase()
+                let colorRegex1 = /^color ([0-9-a-f]|[0-9-A-F]){1}([0-9-a-f]|[0-9-A-F])?$/
+
+
 
                 if (stringLower == 'help') {
 
@@ -160,13 +180,69 @@
                     write()
 
                 }
-                else if (/^color/.test(stringLower)) {
-                    console.log('das')
+                else if (colorRegex1.test(stringLower)) {
+                    let allColors = {
+                        "0": 'Black',
+                        "1": 'Blue',
+                        "2": 'Green',
+                        "3": 'Aqua',
+                        "4": 'Red',
+                        "5": 'Purple',
+                        "6": 'Yellow',
+                        "7": 'White',
+                        "8": 'Gray',
+                        "9": '#add8e6',
+                        "A": '#ade6bb',
+                        "B": '#79cdcd',
+                        "C": '#ffcccb',
+                        "D": '#c1aec5',
+                        "E": '#ffed83',
+                        "F": '#ced8d0'
+                    }
+                    let BrightWhite = ""
+                    let colorArray = stringLower.split(' ')
+                    colors = colorArray[1];
+                    color1 = color2 = null;
+
+                    colors = colors.split('')
+                    color1 = (colors[0] + "").toUpperCase()
+                    color2 = colors.length > 1 ? (colors[1]).toUpperCase() : null
+
+                    if (color1 == color2) {
+                        write()
+                        return
+                    }
+
+                    if (color2 == null) {
+                        //color1=color
+                        $(document.body).css('color', allColors[color1])
+                    }
+                    else {
+                        //color1=back
+                        //color2=color
+                        $(document.body).css('background-color', allColors[color1])
+                        $(document.body).css('color', allColors[color2])
+                    }
+
+                    write()
                 }
+
+
+
+
                 else if (stringLower == 'exit') {
                     console.log('dsa')
                     var customWindow = window.open('', '_blank', '');
                     //customWindow.close();
+                }
+                else if (stringLower == 'back') {
+                    history.back()
+                }
+                else if (stringLower == 'clear') {
+                    $('code').remove()
+                    print("Hi, I'm Stefan", null, false)
+                    print('Type "help" to see options', null, true)
+                    write()
                 }
                 else {
                     print(NotRecognized(string), null, true)
@@ -174,28 +250,15 @@
                 }
             }
 
-            function blinkUnderscore() {
+            var blinkInterval = null;
+            function blinkUnderscore(miliseconds) {
 
                 let writes = $('.write');
                 if (writes.length > 0) {
-                    console.log(writes.length)
                     let lastWrite = $(writes[writes.length - 1]);
-                    setInterval(() => {
-                        /*let lastChar = lastWrite.html().split('')[lastWrite.html().length - 1]
+                    window.clearInterval(blinkInterval)
+                    blinkInterval = setInterval(() => {
 
-                        if(lastChar == '&gt;'){
-                            return
-                        }
-                        
-                        if (lastChar != '_') {
-                            lastWrite.html(lastWrite.html() + '_')
-                        }
-                        else {
-                            let str = lastWrite.html();
-                            str = str.replace('_', '')
-                            lastWrite.html(str)
-                        }
-                        */
                         if ($('.underscore').last().css('display') === 'none') {
                             $('.underscore').last().css('display', 'inline')
                         }
@@ -203,10 +266,13 @@
                             $('.underscore').css('display', 'none')
                         }
 
-                    }, 500)
+                    }, miliseconds)
                 }
             }
 
+            print("Hi, I'm Stefan", null, false)
+            print('Type "help" to see options', null, true)
+            write()
             keyDown()
         })
 
