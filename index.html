@@ -261,13 +261,22 @@
 
                         if (color2 == null) {
                             //color1=color
-                            $(document.body).css('color', allColors[color1])
+                            if($(document.body).css('color') != allColors[color1]){
+                                $(document.body).css('background-color', allColors[color1])
+                            }
                         }
                         else {
                             //color1=back
                             //color2=color
-                            $(document.body).css('background-color', allColors[color1])
-                            $(document.body).css('color', allColors[color2])
+                            if($(document.body).css('color') != allColors[color1]){
+                                $(document.body).css('background-color', allColors[color1])
+                            }
+
+                            if($(document.body).css('background-color') != allColors[color1]){
+                                $(document.body).css('color', allColors[color2])
+                            }
+                            
+                            
                         }
                         write()
                     }
@@ -290,7 +299,7 @@
                 else if (stringLower == 'back') {
                     history.back()
                 }
-                else if (stringLower == 'clear') {
+                else if (stringLower == 'clear' || stringLower == 'cls') {
                     $('code').remove()
                     print("Hi, I'm Stefan", null, false)
                     print('Type "HELP" to see options', null, true)
