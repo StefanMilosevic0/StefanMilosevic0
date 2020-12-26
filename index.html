@@ -7,16 +7,26 @@
     <title>Stefan Milosevic</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        function HelpCommand(name, desc) {
+        function HelpCommand(name, desc, spaces) {
             this.name = name
             this.desc = desc
+            this.spaces = spaces
         }
         var helpComands = [
-            new HelpCommand('SEE PROJECTS', 'Type "SEE PROJECTS" to see all my projects.'),
-            new HelpCommand('VISIT GIT', 'Type "VISIT GIT" to visit my Git-Hub page.'),
-            new HelpCommand('COLOR', ' Sets the default console foreground and background colors.'),
-            new HelpCommand('CLEAR', ' Clears the console.')
+            new HelpCommand('SHOW PROJECTS', 'Type "SHOW PROJECTS" to see all my projects.', 10),
+            new HelpCommand('VISIT GIT', 'Type "VISIT GIT" to visit my Git-Hub page.', 14),
+            new HelpCommand('COLOR', ' Sets the default console foreground and background colors.', 17),
+            new HelpCommand('CLEAR', ' Clears the console.', 17)
         ]
+
+        var projectsList = [
+            'StefanMilosevic0'
+        ]
+        var helpExplanations = {
+            'color': 'color help',
+            'see projects': 'see projects help'
+        }
+
     </script>
 </head>
 
@@ -37,11 +47,13 @@
             color: black;
             background: rgba(255, 255, 255, 0.998);
         }
+
+
     </style>
     <script>
         $(document).ready(function () {
 
-            function write() {
+            function write(string) {
                 let showUrl = location.href.replace(/\//g, '\\')
                 showUrl = showUrl.split('')
 
@@ -54,8 +66,11 @@
                 showUrl = showUrl.join('')
 
                 $('.underscore').remove()
+                if (string == null) {
+                    string = showUrl
+                }
 
-                print(showUrl, null, true, 'write')
+                print(string, null, true, 'write')
                 print('', null, false, 'user-text')
                 print('<code>_</code>', null, false, 'underscore')
 
@@ -63,7 +78,7 @@
             }
 
             function NotRecognized(string) {
-                return "'" + string + "'" + " is not recognized as an internal or external command,<br>operable program or batch file."
+                return "\"" + string + "\"" + " is not recognized as an internal or external command,<br>operable program or batch file."
             }
 
             function print(string, elementSelector, br, classes = '') {
@@ -175,57 +190,94 @@
 
                     //print("For more information on a specific command, type HELP command-name", null, true)
                     for (let command of helpComands) {
-                        print(command.name + '--->' + command.desc, null, true)
+                        let spaces = ''
+                        for (let i = 0; i < command.spaces; i++) {
+                            spaces += '&nbsp;'
+                        }
+                        print(command.name + spaces + command.desc, null, true)
+                        console.log(command.name + spaces + command.desc)
                     }
                     write()
 
                 }
-                else if (colorRegex1.test(stringLower)) {
-                    let allColors = {
-                        "0": 'Black',
-                        "1": 'Blue',
-                        "2": 'Green',
-                        "3": 'Aqua',
-                        "4": 'Red',
-                        "5": 'Purple',
-                        "6": 'Yellow',
-                        "7": 'White',
-                        "8": 'Gray',
-                        "9": '#add8e6',
-                        "A": '#ade6bb',
-                        "B": '#79cdcd',
-                        "C": '#ffcccb',
-                        "D": '#c1aec5',
-                        "E": '#ffed83',
-                        "F": '#ced8d0'
-                    }
-                    let BrightWhite = ""
-                    let colorArray = stringLower.split(' ')
-                    colors = colorArray[1];
-                    color1 = color2 = null;
 
-                    colors = colors.split('')
-                    color1 = (colors[0] + "").toUpperCase()
-                    color2 = colors.length > 1 ? (colors[1]).toUpperCase() : null
-
-                    if (color1 == color2) {
-                        write()
-                        return
-                    }
-
-                    if (color2 == null) {
-                        //color1=color
-                        $(document.body).css('color', allColors[color1])
+                else if (/^help/.test(stringLower) && stringLower != 'help') {
+                    console.log('pocinje sa help')
+                    let command = stringLower.split(' ')[1]
+                    if (helpExplanations[command]) {
+                        let commandLower = command.toLocaleLowerCase()
+                        print(helpExplanations[commandLower], null, true)
+                        write('Press any key to continue . . .')
+                        $(document.body).keydown(function (e){
+                            //prints an example and wirte()
+                        })
                     }
                     else {
-                        //color1=back
-                        //color2=color
-                        $(document.body).css('background-color', allColors[color1])
-                        $(document.body).css('color', allColors[color2])
+                        print('This command is not supported by the help utility. Try "' + command + '/?".', null, true)
+                        print('', null, true)
+                        write()
                     }
 
-                    write()
                 }
+
+                else if (/^color/.test(stringLower) || /color$/.test(stringLower)) {
+                    if (stringLower == 'color') {
+                        $(document.body).css('background-color', 'black')
+                        $(document.body).css('color', 'white')
+                        write()
+                    }
+                    else if (colorRegex1.test(stringLower)) {
+                        let allColors = {
+                            "0": 'Black',
+                            "1": 'Blue',
+                            "2": 'Green',
+                            "3": 'Aqua',
+                            "4": 'Red',
+                            "5": 'Purple',
+                            "6": 'Yellow',
+                            "7": 'White',
+                            "8": 'Gray',
+                            "9": '#add8e6',
+                            "A": '#ade6bb',
+                            "B": '#79cdcd',
+                            "C": '#ffcccb',
+                            "D": '#c1aec5',
+                            "E": '#ffed83',
+                            "F": '#ced8d0'
+                        }
+                        let BrightWhite = ""
+                        let colorArray = stringLower.split(' ')
+                        colors = colorArray[1];
+                        color1 = color2 = null;
+
+                        colors = colors.split('')
+                        color1 = (colors[0] + "").toUpperCase()
+                        color2 = colors.length > 1 ? (colors[1]).toUpperCase() : null
+
+                        if (color1 == color2) {
+                            write()
+                            return
+                        }
+
+                        if (color2 == null) {
+                            //color1=color
+                            $(document.body).css('color', allColors[color1])
+                        }
+                        else {
+                            //color1=back
+                            //color2=color
+                            $(document.body).css('background-color', allColors[color1])
+                            $(document.body).css('color', allColors[color2])
+                        }
+                        write()
+                    }
+                    else {
+                        print(NotRecognized(string), null, true)
+                        write()
+                    }
+
+                }
+
 
 
 
@@ -241,8 +293,48 @@
                 else if (stringLower == 'clear') {
                     $('code').remove()
                     print("Hi, I'm Stefan", null, false)
-                    print('Type "help" to see options', null, true)
+                    print('Type "HELP" to see options', null, true)
                     write()
+                }
+                else if (stringLower == 'visit git') {
+                    let link = 'https://github.com/StefanMilosevic0/'
+                    window.open(link, '_blank')
+                    print('You has been redirected to ' + link, null, true)
+                    write()
+                }
+                else if (stringLower == 'show projects') {
+                    if (projectsList.length) {
+                        print("Type show and than name of the project you want to see. ETC. \"SEE PROJECT\".", null, true)
+                        let i = 0
+                        for (let project of projectsList) {
+                            print(++i + ". " + project, null, true)
+                        }
+                    }
+                    else {
+                        print("There's no projects to show.", null, true)
+                    }
+
+                    write()
+                }
+                else if (/^see /.test(stringLower)) {
+                    console.log('dsadads')
+                    let projectName = stringLower.split(' ')[1]
+                    let projectsListLower = projectsList.map(function (el, i) {
+                        return el.toLowerCase()
+                    })
+
+
+
+                    if (projectsListLower.includes(projectName)) {
+                        let link = 'https://github.com/StefanMilosevic0/' + projectsList[projectsListLower.indexOf(projectName)]
+                        window.open(link, '_blank')
+                        print('You has been redirected to ' + link, null, true)
+                        write()
+                    }
+                    else {
+                        print('I don\'t have project named "' + string.split(' ')[1] + '".', null, true)
+                        write()
+                    }
                 }
                 else {
                     print(NotRecognized(string), null, true)
@@ -271,7 +363,7 @@
             }
 
             print("Hi, I'm Stefan", null, false)
-            print('Type "help" to see options', null, true)
+            print('Type "HELP" to see options', null, true)
             write()
             keyDown()
         })
